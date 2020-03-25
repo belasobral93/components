@@ -115,11 +115,11 @@ const InputTimeWrapper = styled.div.attrs({
   ${InputText} {
     border: none;
     border-radius: 0;
-    padding: ${({ theme }) => theme.space.xxxsmall} 0;
+    padding: 0;
     margin: 0;
     box-shadow: none;
     background: transparent;
-    width: 2rem;
+    width: 1.75rem;
     height: auto;
     line-height: ${({ theme }) => theme.lineHeights.medium};
     text-align: center;
