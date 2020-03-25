@@ -17,10 +17,12 @@ import {
   inputTextDefaults,
   CustomizableInputTextAttributes,
 } from '../InputText'
+import { timeFormats } from '../utils'
+
 import { ValidationType } from '../../ValidationMessage'
 
 interface InputTimeProps extends SpaceProps, BorderProps {
-  format?: '12h' | '24h'
+  format?: timeFormats
   defaultValue?: string
   value?: string
   onChange?: (time?: string) => void
