@@ -28,14 +28,18 @@ interface InputTimeProps extends SpaceProps, BorderProps {
   onValidationFail?: (value: string) => void
 }
 
-export const InputTime: FC<InputTimeProps> = () => {
+export const InputTime: FC<InputTimeProps> = ({ format = '12h' }) => {
   return (
     <InputTimeWrapper>
       <InputTimeLayout>
-        <InputText maxLength={2} placeholder="HH" />
+        <InputText maxLength={2} placeholder="--" />
         <div>:</div>
-        <InputText maxLength={2} placeholder="MM" />
-        <InputText maxLength={2} placeholder="PM" />
+        <InputText maxLength={2} placeholder="--" />
+        {format === '12h' ? (
+          <InputText maxLength={2} placeholder="--" />
+        ) : (
+          <span />
+        )}
       </InputTimeLayout>
     </InputTimeWrapper>
   )
@@ -50,6 +54,7 @@ const InputTimeWrapper = styled.div.attrs({
   ${space}
 
   display: inline-block;
+  padding: ${({ theme }) => theme.space.xxsmall};
 
   &:hover {
     ${inputTextHover}
@@ -68,13 +73,16 @@ const InputTimeWrapper = styled.div.attrs({
   ${InputText} {
     border: none;
     border-radius: 0;
-    padding: 0;
+    padding: ${({ theme }) => theme.space.xxxsmall} 0;
     margin: 0;
     box-shadow: none;
     background: transparent;
-    width: 1.5rem;
-    &:last-child {
-      margin-left: ${({ theme }) => theme.space.xsmall};
+    width: 2rem;
+    height: auto;
+    line-height: ${({ theme }) => theme.lineHeights.medium};
+    text-align: center;
+    &:focus {
+      background: ${({ theme }) => theme.colors.palette.purple100};
     }
   }
 `
@@ -82,6 +90,6 @@ const InputTimeWrapper = styled.div.attrs({
 const InputTimeLayout = styled.div`
   display: grid;
   grid-gap: 0.25rem;
-  grid-template-columns: 1fr auto 1fr 2fr;
+  grid-template-columns: repeat(4, auto);
   align-items: center;
 `
