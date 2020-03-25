@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import React, { KeyboardEvent, FC, useState } from 'react'
 import styled from 'styled-components'
 
 import {
@@ -17,7 +17,7 @@ import {
   inputTextDefaults,
   CustomizableInputTextAttributes,
 } from '../InputText'
-import { timeFormats } from '../utils'
+import { formatTimeString, timeFormats, parseBase10Int } from '../utils'
 
 import { ValidationType } from '../../ValidationMessage'
 
@@ -30,15 +30,55 @@ interface InputTimeProps extends SpaceProps, BorderProps {
   onValidationFail?: (value: string) => void
 }
 
+const isNumericKeycode = (e: KeyboardEvent) =>
+  (e.keyCode >= 48 && e.keyCode <= 57) || (e.keyCode >= 96 && e.keyCode <= 105)
+
 export const InputTime: FC<InputTimeProps> = ({ format = '12h' }) => {
+  const [hour, setHour] = useState('')
+  const [minute, setMinute] = useState('')
+  const [period, setPeriod] = useState('')
+
+  const handleHourKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (isNumericKeycode(e)) {
+      setHour(formatTimeString(parseBase10Int(e.key)))
+    }
+  }
+
+  const handleMinuteKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (isNumericKeycode(e)) {
+      setMinute(formatTimeString(parseBase10Int(e.key)))
+    }
+  }
+
+  const handlePeriodKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    const key = e.key.toUpperCase()
+    key === 'P' && setPeriod('PM')
+    key === 'A' && setPeriod('AM')
+  }
+
   return (
     <InputTimeWrapper>
       <InputTimeLayout>
-        <InputText maxLength={2} placeholder="--" />
+        <InputText
+          maxLength={2}
+          placeholder="--"
+          value={hour}
+          onKeyDown={handleHourKeyDown}
+        />
         <div>:</div>
-        <InputText maxLength={2} placeholder="--" />
+        <InputText
+          maxLength={2}
+          placeholder="--"
+          value={minute}
+          onKeyDown={handleMinuteKeyDown}
+        />
         {format === '12h' ? (
-          <InputText maxLength={2} placeholder="--" />
+          <InputText
+            maxLength={2}
+            placeholder="--"
+            value={period}
+            onKeyDown={handlePeriodKeyDown}
+          />
         ) : (
           <span />
         )}
