@@ -24,15 +24,13 @@ import { GlobalStyle } from '@looker/components'
 import { theme } from '@looker/design-tokens'
 import { ThemeProvider } from 'styled-components'
 
-import { SortableActionListDemo } from './ActionList/SortableActionListDemo'
+import { TestPopovers } from './Popovers/Testing'
 
 const App: React.FC = () => {
   return (
     <ThemeProvider theme={theme}>
-      <>
-        <GlobalStyle />
-        <SortableActionListDemo />
-      </>
+      <GlobalStyle />
+      <TestPopovers />
     </ThemeProvider>
   )
 }
