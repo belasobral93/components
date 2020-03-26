@@ -27,21 +27,23 @@
 import React, { forwardRef, Ref, ReactNode } from 'react'
 import styled from 'styled-components'
 import { CustomizableAttributes } from '@looker/design-tokens'
-import { Box } from '../../../Layout'
 import { ListItem } from '../../../List'
-import { Heading, Paragraph } from '../../../Text'
-import { ValidationType } from '../../ValidationMessage'
 import {
   ComboboxMulti,
   ComboboxMultiInput,
   ComboboxMultiList,
   ComboboxMultiOption,
   ComboboxMultiProps,
-  comboboxOptionGrid,
-  ComboboxOptionText,
   getComboboxText,
 } from '../Combobox'
-import { SelectOptionObject, SelectOptionProps } from './Select'
+import {
+  flattenOptions,
+  SelectBaseProps,
+  SelectOptionGroup,
+  SelectOptionObject,
+  SelectOptionProps,
+  SelectOptionWithDescription,
+} from './Select'
 
 export const CustomizableSelectMultiAttributes: CustomizableAttributes = {
   borderRadius: 'medium',
@@ -57,29 +59,10 @@ export interface SelectMultiOptionGroupProps {
 }
 
 export interface SelectMultiProps
-  extends Omit<ComboboxMultiProps, 'values' | 'defaultValues' | 'onChange'> {
-  options?: SelectOptionProps[]
+  extends Omit<ComboboxMultiProps, 'values' | 'defaultValues' | 'onChange'>,
+    SelectBaseProps {
   /**
-   * Displays an example value or short hint to the user. Should not replace a label.
-   */
-  placeholder?: string
-  /**
-   * The user can type in the input (default false to mimic traditional select tag)
-   */
-  isFilterable?: boolean
-  /**
-   * The user can clear the current value by clicking an x icon button
-   */
-  isClearable?: boolean
-  /**
-   * Handle when the user types in the field,
-   * or the menu opens with a pre-populated value
-   */
-  onFilter?: (term: string) => void
-
-  validationType?: ValidationType
-  /**
-   * Value of the current selected option (controlled)
+   * Values of the current selected option (controlled)
    */
   values?: string[]
   /**
@@ -90,19 +73,6 @@ export interface SelectMultiProps
    * Handle an option being selected
    */
   onChange?: (values?: string[]) => void
-}
-
-function flattenOptions(options: SelectOptionProps[]) {
-  return options.reduce(
-    (acc: SelectOptionObject[], option: SelectOptionProps) => {
-      const optionAsGroup = option as SelectMultiOptionGroupProps
-      if (optionAsGroup.title) {
-        return [...acc, ...optionAsGroup.options]
-      }
-      return [...acc, option as SelectOptionObject]
-    },
-    []
-  )
 }
 
 function getOptions(
@@ -121,44 +91,12 @@ const renderOption = (option: SelectOptionObject, index: number) => {
   if (option.description) {
     return (
       <ComboboxMultiOption {...option} key={index} py="xxsmall">
-        <Box>
-          <Heading fontSize="small" fontWeight="semiBold" pb="xxsmall">
-            <ComboboxOptionText />
-          </Heading>
-          <Paragraph variant="subdued" fontSize="small">
-            {option.description}
-          </Paragraph>
-        </Box>
+        <SelectOptionWithDescription {...option} />
       </ComboboxMultiOption>
     )
   }
   return <ComboboxMultiOption {...option} key={index} />
 }
-
-const SelectMultiOptionGroupTitle = styled(Heading)`
-  ${comboboxOptionGrid}
-`
-
-SelectMultiOptionGroupTitle.defaultProps = {
-  fontSize: 'xxsmall',
-  fontWeight: 'semiBold',
-  px: 'xsmall',
-  py: 'xxsmall',
-  variant: 'subdued',
-}
-
-const SelectMultiOptionGroup = ({
-  options,
-  title,
-}: SelectMultiOptionGroupProps) => (
-  <Box py="xxsmall">
-    <SelectMultiOptionGroupTitle>
-      <span />
-      {title}
-    </SelectMultiOptionGroupTitle>
-    {options.map(renderOption)}
-  </Box>
-)
 
 const SelectMultiComponent = forwardRef(
   (
@@ -239,7 +177,7 @@ const SelectMultiComponent = forwardRef(
               options.map((option: SelectOptionProps, index: number) => {
                 const optionAsGroup = option as SelectMultiOptionGroupProps
                 return optionAsGroup.title ? (
-                  <SelectMultiOptionGroup key={index} {...optionAsGroup} />
+                  <SelectOptionGroup key={index} {...optionAsGroup} />
                 ) : (
                   renderOption(option as SelectOptionObject, index)
                 )
